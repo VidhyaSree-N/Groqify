@@ -63,7 +63,7 @@ let npcs = [
   { name: "femaleEmployee", model: "female.glb", position: new THREE.Vector3(2.82, 2.51, 0.66), rotationY: 0, scale: 0.9, dialogue: "Hello, detective! Need any help?", object: null },
   { name: "seniorEmployee", model: "senior.glb", position: new THREE.Vector3(6.9, 2.11, 6.8), rotationY: 0, scale: 1.0, dialogue: "Good day, detective. What brings you here?", object: null },
   { name: "maleEmployee", model: "male.glb", position: new THREE.Vector3(-1.0, 1.81, 6.7), rotationY: Math.PI / 2, scale: 1.3, dialogue: "Hey detective, do you have any leads yet?", object: null },
-  { name: "victimEmployee", model: "victim.glb", position: new THREE.Vector3(4.8, 1.81, 13), rotationY: 24.5, scale: 1.3, dialogue: "Hey detective, do you have any leads yet?", object: null }
+  { name: "victimEmployee", model: "victim.glb", position: new THREE.Vector3(4.8, 1.81, 13), rotationY: 24.5, scale: 1.3, dialogue: "Anything else you want know detective?", object: null }
 ];
 
 npcs.forEach(npc => {
@@ -162,4 +162,4 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(sizes.width, sizes.height);
 renderer.outputEncoding = THREE.sRGBEncoding;
 
-export { scene, camera, controls, renderer, gltfLoader, collidableObjects, officeBoundingBox, npcs, evidenceObjects, collectedEvidence, screenMesh, cctvScreen  };
+export { scene, camera, controls, renderer, gltfLoader, collidableObjects, officeBoundingBox, npcs, evidenceObjects, collectedEvidence, screenMesh, cctvScreen, video, videoTexture };

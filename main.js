@@ -1,5 +1,5 @@
 import * as THREE from './js/libs/three.module.js';
-import { scene, camera, controls, renderer, gltfLoader, npcs, collidableObjects, officeBoundingBox,evidenceObjects, collectedEvidence, screenMesh, cctvScreen } from './setup.js';
+import { scene, camera, controls, renderer, gltfLoader, npcs, collidableObjects, officeBoundingBox,evidenceObjects, collectedEvidence, screenMesh, cctvScreen, video, videoTexture} from './setup.js';
 
 /**
  * Load Detective Character
@@ -109,7 +109,25 @@ function createDetectiveChatBox() {
 
 
 /**
- * Create an NPC Chat Bubble
+ * Show Chat Box When Near NPC
+ */
+function showChat(npc) {
+  let chatBox = document.querySelector(".detective-chat");
+  if (chatBox) chatBox.style.display = "block"; // ✅ Detective chat
+  createNPCChatBox(npc); // ✅ NPC chat
+}
+
+/**
+ * Hide Chat Box When Moving Away
+ */
+function hideChat() {
+  let chatBox = document.querySelector(".detective-chat");
+  let npcChat = document.querySelector(".npc-chat");
+  if (chatBox) chatBox.style.display = "none";
+  if (npcChat) npcChat.remove();
+}
+/**
+ * Create an AI-Driven NPC Chat Bubble
  */
 function createNPCChatBox(npc) {
   let chatContainer = document.getElementById("chat-container");
@@ -117,10 +135,12 @@ function createNPCChatBox(npc) {
   // ✅ Remove old NPC chat bubbles
   document.querySelectorAll(".npc-chat").forEach(chat => chat.remove());
 
-  // ✅ Create new NPC chat bubble
+  // ✅ Generate dynamic response based on evidence collected
+  let npcDialogue = generateNPCDialogue(npc);
+
   let npcChat = document.createElement("div");
   npcChat.className = "chat-bubble npc-chat";
-  npcChat.innerHTML = `<strong>${npc.name}:</strong> ${npc.dialogue}`;
+  npcChat.innerHTML = `<strong>${npc.name}:</strong> ${npcDialogue}`;
   chatContainer.appendChild(npcChat);
 
   function updateNPCChatPosition() {
@@ -146,23 +166,104 @@ function createNPCChatBox(npc) {
 }
 
 /**
- * Show Chat Box When Near NPC
+ * AI-Generated NPC Dialogue
  */
-function showChat(npc) {
-  let chatBox = document.querySelector(".detective-chat");
-  if (chatBox) chatBox.style.display = "block"; // ✅ Detective chat
-  createNPCChatBox(npc); // ✅ NPC chat
+function generateNPCDialogue(npc) {
+  let evidenceCount = collectedEvidence.length;
+
+  if (npc.name === "victimEmployee") {
+    if (evidenceCount === 0) return "I don't feel safe at work. Do you believe me?";
+    if (collectedEvidence.includes("CCTV Footage")) return "The CCTV footage proves my story! Will you help me report this?";
+    if (collectedEvidence.includes("Login/Logout Records")) return "The records might show who was near my desk when I received those messages.";
+    return "Thank you for listening... I hope you find something.";
+  }
+
+  if (npc.name === "seniorEmployee") {
+    if (collectedEvidence.includes("Threatening Messages")) return "I... I didn't mean for them to take it that way.";
+    if (collectedEvidence.includes("CCTV Footage")) return "The CCTV? What did you see?";
+    return "If you're looking for answers, you should check with the junior staff.";
+  }
+
+  return npc.dialogue;
+}
+let lastEvidenceCollectedTime = Date.now();
+
+/**
+ * AI-Driven Hint System (Now Appears Inside the Scene with Sprite-Based Text)
+ */
+function checkForHint() {
+  let timeSinceLastEvidence = (Date.now() - lastEvidenceCollectedTime) / 1000; // In seconds
+
+  if (timeSinceLastEvidence > 5) {  // If no evidence found in 20 seconds
+    provideHint();
+  }
 }
 
 /**
- * Hide Chat Box When Moving Away
+ * Provide AI Hint Based on Missing Evidence
  */
-function hideChat() {
-  let chatBox = document.querySelector(".detective-chat");
-  let npcChat = document.querySelector(".npc-chat");
-  if (chatBox) chatBox.style.display = "none";
-  if (npcChat) npcChat.remove();
+function provideHint() {
+  let missingEvidence = ["CCTV Footage", "Threatening Messages", "Login/Logout Records"]
+      .filter(item => !collectedEvidence.includes(item));
+
+  if (missingEvidence.length > 0) {
+    let hintMessage = `💡 Hint: Check ${missingEvidence[0]}`;
+    displayHintInScene(hintMessage);
+  }
 }
+
+/**
+ * Display AI Hint Inside the Three.js Scene as a Floating Sprite
+ */
+function displayHintInScene(message) {
+  // Remove old hint if it exists
+  let oldHint = scene.getObjectByName("HintText");
+  if (oldHint) scene.remove(oldHint);
+
+  // Create a canvas to draw text
+  let canvas = document.createElement("canvas");
+  let context = canvas.getContext("2d");
+  let fontSize = 24;
+  canvas.width = 512;
+  canvas.height = 256;
+
+  // Set font and style
+  context.fillStyle = "rgba(255, 255, 0, 1)";  // Yellow text
+  context.font = `bold ${fontSize}px Arial`;
+  context.textAlign = "center";
+  context.fillText(message, canvas.width / 2, canvas.height / 2);
+
+  // Create texture from canvas
+  let texture = new THREE.CanvasTexture(canvas);
+  let material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+
+  // Create sprite
+  let hintSprite = new THREE.Sprite(material);
+  hintSprite.name = "HintText";
+  hintSprite.scale.set(3, 1.5, 1); // Adjust size of hint
+  hintSprite.position.set(character.position.x, character.position.y + 1.5, character.position.z);
+
+  scene.add(hintSprite);
+
+  // Animate the hint to fade out
+  let fadeOutTime = 5; // Seconds
+  let startTime = Date.now();
+
+  function fadeHint() {
+    let elapsed = (Date.now() - startTime) / 1000;
+    if (elapsed >= fadeOutTime) {
+      scene.remove(hintSprite);
+    } else {
+      hintSprite.material.opacity = Math.max(1.0 - (elapsed / fadeOutTime), 0);
+      requestAnimationFrame(fadeHint);
+    }
+  }
+  fadeHint();
+}
+
+// Check for hints every 10 seconds
+setInterval(checkForHint, 10000);
+
 
 /**
  * Check NPC Interactions (Toggle Chat Box & NPC Chat Visibility)
@@ -209,11 +310,6 @@ function checkCollision(newPosition) {
 }
 
 /**
- * Evidence Collection System
- */
-// let collectedEvidence = [];
-
-/**
  * **📌 Make Evidence Clickable Without Hiding Objects**
  */
 window.addEventListener("click", (event) => {
@@ -240,6 +336,82 @@ window.addEventListener("click", (event) => {
     }
   }
 });
+function applyGlowEffect(object, intensity = 5.0) {
+  if (!object || !object.material) return;
+
+  // Convert to MeshStandardMaterial if needed
+  if (!(object.material instanceof THREE.MeshStandardMaterial)) {
+    object.material = new THREE.MeshStandardMaterial({
+      color: object.material.color || new THREE.Color(0xffffff),
+      map: object.material.map || null,
+      emissive: new THREE.Color(0xff0000), // 🔴 RED glow for everything
+      emissiveIntensity: intensity,
+      roughness: 0.4,
+      metalness: 0.3,
+    });
+  } else {
+    object.material.emissive = new THREE.Color(0xff0000);
+    object.material.emissiveIntensity = intensity;
+    object.material.needsUpdate = true;
+  }
+}
+function updateEvidenceGlow() {
+  if (!character) return;
+
+  const glowDistance = 5.0; // Distance threshold to apply glow
+
+  // Include all evidence items
+  const allEvidenceObjects = [...evidenceObjects, screenMesh, cctvScreen];
+
+  allEvidenceObjects.forEach((object) => {
+    if (!object) return;
+    const distance = character.position.distanceTo(object.position);
+
+    let evidenceLabel = document.getElementById(`evidence-label-${object.uuid}`);
+
+    if (distance < glowDistance) {
+      applyGlowEffect(object, 10.0); // Super strong red glow
+
+      // Create label if it doesn't exist
+      if (!evidenceLabel) {
+        evidenceLabel = document.createElement("div");
+        evidenceLabel.id = `evidence-label-${object.uuid}`;
+        evidenceLabel.className = "evidence-label";
+        evidenceLabel.innerText = "🔍 Click to collect evidence";
+        document.body.appendChild(evidenceLabel);
+      }
+
+      // Position label above the evidence in 2D screen space
+      const objectPosition = object.position.clone().project(camera);
+      const screenX = (objectPosition.x * 0.5 + 0.5) * window.innerWidth;
+      const screenY = (-objectPosition.y * 0.5 + 0.5) * window.innerHeight;
+
+      evidenceLabel.style.position = "absolute";
+      evidenceLabel.style.left = `${screenX}px`;
+      evidenceLabel.style.top = `${screenY}px`;
+      evidenceLabel.style.display = "block";
+
+    } else {
+      applyGlowEffect(object, 0.0); // Remove glow
+
+      // Hide the label if it exists
+      if (evidenceLabel) {
+        evidenceLabel.style.display = "none";
+      }
+    }
+  });
+
+  // 🚨 Ensure CCTV **ALWAYS** uses MeshBasicMaterial for video rendering
+  if (cctvScreen && !(cctvScreen.material instanceof THREE.MeshBasicMaterial)) {
+    cctvScreen.material = new THREE.MeshBasicMaterial({
+      map: videoTexture, // Assign back the video texture
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 1.0
+    });
+  }
+}
+
 
 /**
  * Character Movement Handling (No Changes to Movement)
@@ -276,6 +448,7 @@ function moveCharacter() {
   }
 
   checkInteraction();
+  updateEvidenceGlow();
 
   let cameraPosition = new THREE.Vector3(
       Math.min(character.position.x + 0, officeBoundingBox.max.x - 4),
@@ -319,6 +492,31 @@ window.addEventListener('keyup', (event) => {
   if (event.key === 'd' || event.key === 'ArrowRight') movement.right = false;
 });
 
+// window.addEventListener("click", (event) => {
+//   let mouse = new THREE.Vector2(
+//     (event.clientX / window.innerWidth) * 2 - 1,
+//     -(event.clientY / window.innerHeight) * 2 + 1
+//   );
+//
+//   let raycaster = new THREE.Raycaster();
+//   raycaster.setFromCamera(mouse, camera);
+//
+//   let intersects = raycaster.intersectObjects(scene.children, true); // Check all objects
+//
+//   if (intersects.length > 0) {
+//     let clickedObject = intersects[0].object;
+//     console.log(`🔍 Clicked Object: ${clickedObject.name}, Position: ${clickedObject.position.toArray()}`);
+//   }
+// });
+function updateVideoTexture() {
+  if (video.readyState >= video.HAVE_ENOUGH_DATA) {
+    videoTexture.needsUpdate = true;
+  }
+  requestAnimationFrame(updateVideoTexture);
+}
+updateVideoTexture();
+
+
 /**
  * Animation Loop
  */
@@ -329,3 +527,54 @@ const tick = () => {
   window.requestAnimationFrame(tick);
 };
 tick();
+
+export function showVictimNarrationNearNPC() {
+  let victimNPC = npcs.find(npc => npc.name === "victimEmployee");
+
+  if (!victimNPC || !victimNPC.object) {
+    setTimeout(showVictimNarrationNearNPC, 500); // Retry until NPC loads
+    return;
+  }
+
+  let narrationDiv = document.createElement("div");
+  narrationDiv.id = "victim-narration";
+  narrationDiv.style.position = "absolute";
+  narrationDiv.style.background = "rgba(0, 255, 200, 0.8)";
+  narrationDiv.style.color = "black";
+  narrationDiv.style.padding = "10px 15px";
+  narrationDiv.style.borderRadius = "8px";
+  narrationDiv.style.fontSize = "16px";
+  narrationDiv.style.fontWeight = "bold";
+  narrationDiv.style.zIndex = "10000";
+  narrationDiv.style.textAlign = "center";
+  narrationDiv.style.maxWidth = "300px";
+  narrationDiv.innerHTML =
+      "I’ve been receiving threatening messages that started as passive-aggressive remarks and have escalated to outright threats. I don’t feel safe at work.";
+
+  document.body.appendChild(narrationDiv);
+
+  function updateNarrationPosition() {
+    if (!victimNPC.object) return;
+
+    let npcPosition = new THREE.Vector3();
+    victimNPC.object.getWorldPosition(npcPosition);
+    npcPosition.y += 2.0; // Position slightly above the NPC
+
+    let screenPosition = npcPosition.project(camera);
+    let screenX = (screenPosition.x * 0.5 + 0.5) * window.innerWidth;
+    let screenY = (-screenPosition.y * 0.5 + 0.5) * window.innerHeight;
+
+    narrationDiv.style.left = `${screenX - narrationDiv.clientWidth / 2}px`;
+    narrationDiv.style.top = `${screenY}px`;
+  }
+
+  function animateNarration() {
+    updateNarrationPosition();
+    if (narrationDiv) requestAnimationFrame(animateNarration);
+  }
+  animateNarration();
+
+  setTimeout(() => {
+    narrationDiv.remove();
+  }, 5000);
+}
