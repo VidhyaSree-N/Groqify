@@ -31,6 +31,9 @@ const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture });
 let environment;
 let collidableObjects = [];
 let officeBoundingBox = null;
+let evidenceObjects = [];
+
+let collectedEvidence = [];
 
 gltfLoader.load('my.glb', (gltf) => {
   gltf.scene.traverse((child) => {
@@ -39,6 +42,12 @@ gltfLoader.load('my.glb', (gltf) => {
       child.geometry.computeBoundingBox();
       child.boundingBox = new THREE.Box3().setFromObject(child);
       collidableObjects.push(child);
+
+      // **Identify Evidence Objects**
+      const evidenceNames = ["Cube010", "Cube002", "Cube008"];
+      if (evidenceNames.includes(child.name)) {
+        evidenceObjects.push(child);
+      }
     }
   });
 
@@ -57,7 +66,6 @@ let npcs = [
   { name: "victimEmployee", model: "victim.glb", position: new THREE.Vector3(4.8, 1.81, 13), rotationY: 24.5, scale: 1.3, dialogue: "Hey detective, do you have any leads yet?", object: null }
 ];
 
-
 npcs.forEach(npc => {
   gltfLoader.load(npc.model, (gltf) => {
     npc.object = gltf.scene;
@@ -69,6 +77,60 @@ npcs.forEach(npc => {
     scene.add(npc.object);
   });
 });
+
+/**
+ * 📺 **Add a Digital Screen Using an Image (Correctly Oriented)**
+ */
+const screenTexture = textureLoader.load('./logg.png');
+
+// ✅ Ensure the texture is correctly oriented
+screenTexture.flipY = true;  // Flip vertically if needed
+screenTexture.wrapS = THREE.RepeatWrapping;
+screenTexture.repeat.x = 1;  // Keep normal horizontal orientation
+
+const screenMaterial = new THREE.MeshBasicMaterial({
+  map: screenTexture,
+  side: THREE.DoubleSide, // Ensure visibility from both sides
+});
+
+const screenGeometry = new THREE.PlaneGeometry(2, 1.5); // Adjust as needed
+const screenMesh = new THREE.Mesh(screenGeometry, screenMaterial);
+
+// ✅ Correct screen position & rotation
+screenMesh.position.set(-4.5, 3, -4); // Adjust to fit your scene
+screenMesh.rotation.y = 0; // Rotate to face the player
+
+scene.add(screenMesh);
+
+/**
+ * 📹 **Add a CCTV Screen Using a Video Texture**
+ */
+const video = document.createElement('video');
+video.src = './footage.mp4'; // 📌 Replace with actual CCTV footage file
+video.loop = true;
+video.muted = true; // No sound needed
+video.play(); // Auto-play
+
+const videoTexture = new THREE.VideoTexture(video);
+videoTexture.flipY = true;
+videoTexture.minFilter = THREE.LinearFilter;
+videoTexture.magFilter = THREE.LinearFilter;
+videoTexture.format = THREE.RGBAFormat;
+
+const cctvMaterial = new THREE.MeshBasicMaterial({
+  map: videoTexture,
+  side: THREE.DoubleSide,
+});
+
+const cctvGeometry = new THREE.PlaneGeometry(3.5, 2); // Adjust size as needed
+const cctvScreen = new THREE.Mesh(cctvGeometry, cctvMaterial);
+
+// ✅ Position and rotate the CCTV screen
+cctvScreen.position.set(9.5, 2.6, 16);  // Adjust position as needed
+cctvScreen.rotation.y = Math.PI / 2;  // Face towards the player
+scene.add(cctvScreen);
+
+
 
 /**
  * Lights
@@ -93,7 +155,6 @@ const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.target.set(1, 4, 15);
 
-
 /**
  * Renderer
  */
@@ -101,4 +162,4 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(sizes.width, sizes.height);
 renderer.outputEncoding = THREE.sRGBEncoding;
 
-export { scene, camera, controls, renderer, gltfLoader, collidableObjects, officeBoundingBox, npcs };
+export { scene, camera, controls, renderer, gltfLoader, collidableObjects, officeBoundingBox, npcs, evidenceObjects, collectedEvidence, screenMesh, cctvScreen  };

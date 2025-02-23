@@ -1,5 +1,5 @@
 import * as THREE from './js/libs/three.module.js';
-import { scene, camera, controls, renderer, gltfLoader, npcs, collidableObjects, officeBoundingBox } from './setup.js';
+import { scene, camera, controls, renderer, gltfLoader, npcs, collidableObjects, officeBoundingBox,evidenceObjects, collectedEvidence, screenMesh, cctvScreen } from './setup.js';
 
 /**
  * Load Detective Character
@@ -127,7 +127,7 @@ function createNPCChatBox(npc) {
     if (!npc.object) return;
     let npcWorldPosition = new THREE.Vector3();
     npc.object.getWorldPosition(npcWorldPosition);
-    npcWorldPosition.y += 1.5;
+    npcWorldPosition.y += 1.0;
 
     let npcScreenPosition = npcWorldPosition.project(camera);
     let screenX = (npcScreenPosition.x * 0.5 + 0.5) * window.innerWidth;
@@ -208,6 +208,38 @@ function checkCollision(newPosition) {
   return false;
 }
 
+/**
+ * Evidence Collection System
+ */
+// let collectedEvidence = [];
+
+/**
+ * **📌 Make Evidence Clickable Without Hiding Objects**
+ */
+window.addEventListener("click", (event) => {
+  let mouse = new THREE.Vector2(
+      (event.clientX / window.innerWidth) * 2 - 1,
+      -(event.clientY / window.innerHeight) * 2 + 1
+  );
+
+  let raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+
+  let intersects = raycaster.intersectObjects([...evidenceObjects, screenMesh, cctvScreen]); // Make sure all evidence is clickable
+
+  if (intersects.length > 0) {
+    let clickedObject = intersects[0].object;
+    let evidenceName = clickedObject.name || (clickedObject === screenMesh ? "Login/Logout Records" : "CCTV Footage");
+
+    if (!collectedEvidence.includes(evidenceName)) {
+      collectedEvidence.push(evidenceName);
+      alert(`🕵️ Evidence Collected: ${evidenceName}`);
+      console.log(`✅ Evidence Collected: ${evidenceName}`);
+    } else {
+      alert(`🕵️ You already collected this evidence.`);
+    }
+  }
+});
 
 /**
  * Character Movement Handling (No Changes to Movement)
@@ -246,14 +278,29 @@ function moveCharacter() {
   checkInteraction();
 
   let cameraPosition = new THREE.Vector3(
-    Math.min(character.position.x + 0, officeBoundingBox.max.x - 4),
-    character.position.y + 2,
-    character.position.z + 5
+      Math.min(character.position.x + 0, officeBoundingBox.max.x - 4),
+      character.position.y + 2,
+      character.position.z + 5
   );
   camera.position.copy(cameraPosition);
 
   controls.target.set(character.position.x, character.position.y, character.position.z);
+
 }
+
+/**
+ * Detects if the detective is near a wall
+ */
+function isNearWall(position) {
+  let wallThreshold = 2.5; // Distance to trigger wall camera adjustment
+  return (
+      position.x <= officeBoundingBox.min.x + wallThreshold ||
+      position.x >= officeBoundingBox.max.x - wallThreshold ||
+      position.z <= officeBoundingBox.min.z + wallThreshold ||
+      position.z >= officeBoundingBox.max.z - wallThreshold
+  );
+}
+
 
 /**
  * Keyboard Event Listeners
