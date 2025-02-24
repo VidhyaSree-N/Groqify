@@ -1,10 +1,13 @@
 import * as THREE from './js/libs/three.module.js';
+import './evidenceSystem.js';  // Ensure Evidence system is loaded
 import { scene, camera, controls, renderer, gltfLoader, npcs, collidableObjects, officeBoundingBox,evidenceObjects, collectedEvidence, screenMesh, cctvScreen, video, videoTexture} from './setup.js';
+import { createDetectiveChatBox, showChat, hideChat, updateChatPosition} from './chatHandler.js';
+import { collectEvidence, updateEvidenceList } from './evidenceSystem.js';
 
 /**
  * Load Detective Character
  */
-let character;
+export let character;
 const characterSpeed = 0.1;
 const movement = { forward: false, backward: false, left: false, right: false };
 
@@ -17,175 +20,10 @@ gltfLoader.load('dec_tex.glb', (gltf) => {
   character.boundingBox = new THREE.Box3().setFromObject(character);
   scene.add(character);
 
-  // ✅ Chat box starts hidden but is always typable when shown
-  createDetectiveChatBox();
+  // // ✅ Chat box starts hidden but is always typable when shown
+  // createDetectiveChatBox();
 });
 
-/**
- * Create a Chat Box Above the Detective’s Head (Hidden Initially)
- */
-/**
- * Create a Chat Box Above the Detective’s Head (Hidden Initially)
- */
-function createDetectiveChatBox() {
-  let chatContainer = document.getElementById("chat-container");
-
-  // ✅ Remove any old chat box
-  document.querySelectorAll(".detective-chat").forEach(chat => chat.remove());
-
-  // ✅ Create new chat box
-  let detectiveChat = document.createElement("div");
-  detectiveChat.className = "chat-bubble detective-chat";
-  detectiveChat.innerHTML = `
-    <strong>Detective:</strong><br>
-    <input type="text" id="detective-input" placeholder="Type your message..." autocomplete="off" />
-    <button id="send-message">Send</button>
-  `;
-  chatContainer.appendChild(detectiveChat);
-
-  // ✅ Keep input field always focused
-  function keepFocus() {
-    let inputField = document.getElementById("detective-input");
-    if (inputField) {
-      inputField.focus();
-      inputField.setSelectionRange(inputField.value.length, inputField.value.length); // Keep cursor at end
-    }
-  }
-  setInterval(keepFocus, 100); // ✅ Ensures focus stays
-
-  let inputField = document.getElementById("detective-input");
-  let sendButton = document.getElementById("send-message");
-
-  // ✅ Ensure chat box is always interactive
-  inputField.style.pointerEvents = "auto";
-  inputField.style.zIndex = "2000";
-  sendButton.style.pointerEvents = "auto";
-  sendButton.style.zIndex = "2000";
-
-  inputField.addEventListener("click", (event) => event.stopPropagation());
-
-  // ✅ Handle sending messages when clicking "Send"
-  sendButton.onclick = function () {
-    let playerMessage = inputField.value.trim();
-    if (!playerMessage) return; // Prevent empty messages
-
-    console.log("📝 Detective says:", playerMessage);
-
-    // ✅ Keep chat open, replace input with message text
-    detectiveChat.innerHTML = `<strong>Detective:</strong> ${playerMessage}
-      <br><input type="text" id="detective-input" placeholder="Type your message..." autocomplete="off" />
-      <button id="send-message">Send</button>`;
-
-    // ✅ Restore input field & focus
-    let newInputField = document.getElementById("detective-input");
-    let newSendButton = document.getElementById("send-message");
-
-    newInputField.focus();
-    newSendButton.onclick = sendButton.onclick; // ✅ Ensure clicking again works
-  };
-
-  // ✅ Position chat box above detective’s head
-  function updateChatPosition() {
-    if (!character) return;
-    let characterWorldPosition = new THREE.Vector3();
-    character.getWorldPosition(characterWorldPosition);
-    characterWorldPosition.y += 1.5;
-
-    let characterScreenPosition = characterWorldPosition.project(camera);
-    let screenX = (characterScreenPosition.x * 0.5 + 0.5) * window.innerWidth;
-    let screenY = (-characterScreenPosition.y * 0.5 + 0.5) * window.innerHeight;
-
-    detectiveChat.style.position = "absolute";
-    detectiveChat.style.left = `${screenX - detectiveChat.clientWidth / 2}px`;
-    detectiveChat.style.top = `${screenY - 50}px`;
-  }
-
-  function updateChatFrame() {
-    if (character) updateChatPosition();
-    requestAnimationFrame(updateChatFrame);
-  }
-  updateChatFrame();
-}
-
-
-/**
- * Show Chat Box When Near NPC
- */
-function showChat(npc) {
-  let chatBox = document.querySelector(".detective-chat");
-  if (chatBox) chatBox.style.display = "block"; // ✅ Detective chat
-  createNPCChatBox(npc); // ✅ NPC chat
-}
-
-/**
- * Hide Chat Box When Moving Away
- */
-function hideChat() {
-  let chatBox = document.querySelector(".detective-chat");
-  let npcChat = document.querySelector(".npc-chat");
-  if (chatBox) chatBox.style.display = "none";
-  if (npcChat) npcChat.remove();
-}
-/**
- * Create an AI-Driven NPC Chat Bubble
- */
-function createNPCChatBox(npc) {
-  let chatContainer = document.getElementById("chat-container");
-
-  // ✅ Remove old NPC chat bubbles
-  document.querySelectorAll(".npc-chat").forEach(chat => chat.remove());
-
-  // ✅ Generate dynamic response based on evidence collected
-  let npcDialogue = generateNPCDialogue(npc);
-
-  let npcChat = document.createElement("div");
-  npcChat.className = "chat-bubble npc-chat";
-  npcChat.innerHTML = `<strong>${npc.name}:</strong> ${npcDialogue}`;
-  chatContainer.appendChild(npcChat);
-
-  function updateNPCChatPosition() {
-    if (!npc.object) return;
-    let npcWorldPosition = new THREE.Vector3();
-    npc.object.getWorldPosition(npcWorldPosition);
-    npcWorldPosition.y += 1.0;
-
-    let npcScreenPosition = npcWorldPosition.project(camera);
-    let screenX = (npcScreenPosition.x * 0.5 + 0.5) * window.innerWidth;
-    let screenY = (-npcScreenPosition.y * 0.5 + 0.5) * window.innerHeight;
-
-    npcChat.style.position = "absolute";
-    npcChat.style.left = `${screenX - npcChat.clientWidth / 2}px`;
-    npcChat.style.top = `${screenY - 50}px`;
-  }
-
-  function updateNPCChatFrame() {
-    if (npc.object) updateNPCChatPosition();
-    requestAnimationFrame(updateNPCChatFrame);
-  }
-  updateNPCChatFrame();
-}
-
-/**
- * AI-Generated NPC Dialogue
- */
-function generateNPCDialogue(npc) {
-  let evidenceCount = collectedEvidence.length;
-
-  if (npc.name === "victimEmployee") {
-    if (evidenceCount === 0) return "I don't feel safe at work. Do you believe me?";
-    if (collectedEvidence.includes("CCTV Footage")) return "The CCTV footage proves my story! Will you help me report this?";
-    if (collectedEvidence.includes("Login/Logout Records")) return "The records might show who was near my desk when I received those messages.";
-    return "Thank you for listening... I hope you find something.";
-  }
-
-  if (npc.name === "seniorEmployee") {
-    if (collectedEvidence.includes("Threatening Messages")) return "I... I didn't mean for them to take it that way.";
-    if (collectedEvidence.includes("CCTV Footage")) return "The CCTV? What did you see?";
-    return "If you're looking for answers, you should check with the junior staff.";
-  }
-
-  return npc.dialogue;
-}
 let lastEvidenceCollectedTime = Date.now();
 
 /**
@@ -194,7 +32,7 @@ let lastEvidenceCollectedTime = Date.now();
 function checkForHint() {
   let timeSinceLastEvidence = (Date.now() - lastEvidenceCollectedTime) / 1000; // In seconds
 
-  if (timeSinceLastEvidence > 5) {  // If no evidence found in 20 seconds
+  if (timeSinceLastEvidence > 25) {  // If no evidence found in 20 seconds
     provideHint();
   }
 }
@@ -246,7 +84,7 @@ function displayHintInScene(message) {
   scene.add(hintSprite);
 
   // Animate the hint to fade out
-  let fadeOutTime = 5; // Seconds
+  let fadeOutTime = 4; // Seconds
   let startTime = Date.now();
 
   function fadeHint() {
@@ -266,11 +104,21 @@ setInterval(checkForHint, 10000);
 
 
 /**
- * Check NPC Interactions (Toggle Chat Box & NPC Chat Visibility)
+ * Check if Detective is Near an NPC and Show Chat
  */
 function checkInteraction() {
-  if (!character) return;
+  let nearestNPC = getNearestNPC();
+  if (nearestNPC) {
+    showChat(nearestNPC);
+  } else {
+    hideChat();
+  }
+}
 
+/**
+ * Finds the nearest NPC
+ */
+export function getNearestNPC() {
   let nearestNPC = null;
   let minDistance = Infinity;
 
@@ -284,11 +132,7 @@ function checkInteraction() {
     }
   });
 
-  if (nearestNPC) {
-    showChat(nearestNPC);
-  } else {
-    hideChat();
-  }
+  return nearestNPC;
 }
 /**
  * Collision Detection
@@ -309,34 +153,7 @@ function checkCollision(newPosition) {
   return false;
 }
 
-/**
- * **📌 Make Evidence Clickable Without Hiding Objects**
- */
-window.addEventListener("click", (event) => {
-  let mouse = new THREE.Vector2(
-      (event.clientX / window.innerWidth) * 2 - 1,
-      -(event.clientY / window.innerHeight) * 2 + 1
-  );
-
-  let raycaster = new THREE.Raycaster();
-  raycaster.setFromCamera(mouse, camera);
-
-  let intersects = raycaster.intersectObjects([...evidenceObjects, screenMesh, cctvScreen]); // Make sure all evidence is clickable
-
-  if (intersects.length > 0) {
-    let clickedObject = intersects[0].object;
-    let evidenceName = clickedObject.name || (clickedObject === screenMesh ? "Login/Logout Records" : "CCTV Footage");
-
-    if (!collectedEvidence.includes(evidenceName)) {
-      collectedEvidence.push(evidenceName);
-      alert(`🕵️ Evidence Collected: ${evidenceName}`);
-      console.log(`✅ Evidence Collected: ${evidenceName}`);
-    } else {
-      alert(`🕵️ You already collected this evidence.`);
-    }
-  }
-});
-function applyGlowEffect(object, intensity = 5.0) {
+function applyGlowEffect(object, intensity = 0.3) {
   if (!object || !object.material) return;
 
   // Convert to MeshStandardMaterial if needed
@@ -370,7 +187,7 @@ function updateEvidenceGlow() {
     let evidenceLabel = document.getElementById(`evidence-label-${object.uuid}`);
 
     if (distance < glowDistance) {
-      applyGlowEffect(object, 10.0); // Super strong red glow
+      applyGlowEffect(object, 0.3); // Super strong red glow
 
       // Create label if it doesn't exist
       if (!evidenceLabel) {
@@ -417,7 +234,7 @@ function updateEvidenceGlow() {
  * Character Movement Handling (No Changes to Movement)
  */
 function moveCharacter() {
-  if (!character || !officeBoundingBox) return;
+  if (!character || !officeBoundingBox || window.disableMovement ) return;
 
   let newPosition = character.position.clone();
   let moved = false;
@@ -449,6 +266,7 @@ function moveCharacter() {
 
   checkInteraction();
   updateEvidenceGlow();
+  updateChatPosition(character);
 
   let cameraPosition = new THREE.Vector3(
       Math.min(character.position.x + 0, officeBoundingBox.max.x - 4),
@@ -474,6 +292,81 @@ function isNearWall(position) {
   );
 }
 
+import { getAIReport } from './openAIService.js';
+import { generateGameSummary } from './gameSummary.js';
+
+const modal = document.getElementById("report-modal");
+const reportStep1 = document.getElementById("report-step-1");
+const reportStatus = document.getElementById("report-status");
+const reportContent = document.getElementById("report-content");
+const endGameButton = document.getElementById("end-game");
+
+// Step 1: Open the report submission modal
+document.getElementById("submit-report").addEventListener("click", () => {
+  modal.style.display = "flex"; // Show modal
+  reportStep1.style.display = "block"; // Show step 1
+  reportStatus.style.display = "none";
+  reportContent.style.display = "none";
+  endGameButton.style.display = "none";
+});
+
+// Step 2: Submit suspect selection & explanation
+document.getElementById("submit-suspect").addEventListener("click", async () => {
+  let suspect = document.getElementById("suspect-selection").value;
+  let detectiveReason = document.getElementById("detective-reason").value.trim();
+
+  if (!suspect) {
+    alert("⚠️ Please select a suspect before submitting!");
+    return;
+  }
+
+  // Show "Generating Report..."
+  reportStep1.style.display = "none";
+  reportStatus.style.display = "block";
+
+  // ✅ Gather game data
+  let reportData = await generateGameSummary();
+  reportData.suspect = suspect;
+  reportData.detectiveReason = detectiveReason || "No additional reasoning provided.";
+
+  // ✅ Generate AI Report
+  let aiReport = await getAIReport(reportData);
+
+  // Step 3: Show AI Report
+  reportStatus.style.display = "none"; // Hide "Generating Report..."
+  reportContent.style.display = "block"; // Show AI Report
+  reportContent.innerHTML = aiReport;
+  endGameButton.style.display = "block"; // Show "End Game" button
+});
+
+// Step 4: End Game
+endGameButton.addEventListener("click", () => {
+  modal.style.display = "none"; // Hide modal
+  disableGameInteractions();
+  alert("🔍 Case Closed! The investigation has ended.");
+});
+
+// Function to disable movement & interactions
+function disableGameInteractions() {
+  window.disableMovement = true;
+  document.getElementById("submit-report").disabled = true; // Disable submit button
+}
+// Function to disable movement when typing
+function disableMovementOnTyping() {
+  const suspectInput = document.getElementById("suspect-selection");
+  const reasonInput = document.getElementById("detective-reason");
+
+  // When user starts typing, disable movement
+  suspectInput.addEventListener("focus", () => window.disableMovement = true);
+  reasonInput.addEventListener("focus", () => window.disableMovement = true);
+
+  // When user stops typing, re-enable movement
+  suspectInput.addEventListener("blur", () => window.disableMovement = false);
+  reasonInput.addEventListener("blur", () => window.disableMovement = false);
+}
+
+// Call function to apply event listeners
+disableMovementOnTyping();
 
 /**
  * Keyboard Event Listeners
@@ -492,22 +385,6 @@ window.addEventListener('keyup', (event) => {
   if (event.key === 'd' || event.key === 'ArrowRight') movement.right = false;
 });
 
-// window.addEventListener("click", (event) => {
-//   let mouse = new THREE.Vector2(
-//     (event.clientX / window.innerWidth) * 2 - 1,
-//     -(event.clientY / window.innerHeight) * 2 + 1
-//   );
-//
-//   let raycaster = new THREE.Raycaster();
-//   raycaster.setFromCamera(mouse, camera);
-//
-//   let intersects = raycaster.intersectObjects(scene.children, true); // Check all objects
-//
-//   if (intersects.length > 0) {
-//     let clickedObject = intersects[0].object;
-//     console.log(`🔍 Clicked Object: ${clickedObject.name}, Position: ${clickedObject.position.toArray()}`);
-//   }
-// });
 function updateVideoTexture() {
   if (video.readyState >= video.HAVE_ENOUGH_DATA) {
     videoTexture.needsUpdate = true;
@@ -529,7 +406,7 @@ const tick = () => {
 tick();
 
 export function showVictimNarrationNearNPC() {
-  let victimNPC = npcs.find(npc => npc.name === "victimEmployee");
+  let victimNPC = npcs.find(npc => npc.name === "Amy");
 
   if (!victimNPC || !victimNPC.object) {
     setTimeout(showVictimNarrationNearNPC, 500); // Retry until NPC loads
@@ -578,3 +455,7 @@ export function showVictimNarrationNearNPC() {
     narrationDiv.remove();
   }, 5000);
 }
+
+
+
+
