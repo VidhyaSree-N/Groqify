@@ -2,7 +2,6 @@ import * as THREE from './js/libs/three.module.js';
 import './evidenceSystem.js';  // Ensure Evidence system is loaded
 import { scene, camera, controls, renderer, gltfLoader, npcs, collidableObjects, officeBoundingBox,evidenceObjects, collectedEvidence, screenMesh, cctvScreen, video, videoTexture} from './setup.js';
 import { createDetectiveChatBox, showChat, hideChat, updateChatPosition} from './chatHandler.js';
-import { collectEvidence, updateEvidenceList } from './evidenceSystem.js';
 
 /**
  * Load Detective Character
@@ -455,7 +454,3 @@ export function showVictimNarrationNearNPC() {
     narrationDiv.remove();
   }, 5000);
 }
-
-
-
-

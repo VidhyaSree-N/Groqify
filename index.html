@@ -120,6 +120,77 @@
             position: absolute;
             display: none;
         }
+
+        .evidence-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-align: center;
+            pointer-events: none;
+            position: absolute;
+            display: none;
+        }
+
+        .evidence-icon,
+        .evidence-container {
+            width: 200px; /* Set the same width for both */
+            text-align: center; /* Center text inside */
+        }
+
+        .evidence-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            z-index: 999;
+        }
+
+        .evidence-container {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+
+        .evidence-container h3 {
+            margin: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid black;
+        }
+
+        .evidence-container ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .evidence-container li {
+            padding: 5px 0;
+            font-weight: bold;
+        }
+
+        /* Make evidence list items look interactive */
+        .clickable-evidence {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .clickable-evidence:hover {
+            color: darkblue;
+        }
     </style>
 </head>
 <body>
@@ -158,6 +229,13 @@
 
     });
 </script>
+
+<!-- Evidence UI -->
+<div id="evidence-icon" class="evidence-icon">🗂️ Evidence</div>
+<div id="evidence-container" class="evidence-container" style="display: none;">
+    <h3>Collected Evidence</h3>
+    <ul id="evidence-list"></ul>
+</div>
 
 
 </body>
