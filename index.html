@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HR Compliance Game</title>
     <script type="module" src="interaction.js"></script>
+    <script type="module" src="guidebook.js"></script>
     <style>
         /* Style for the introductory overlay */
         #intro-screen {
@@ -35,6 +36,13 @@
             max-width: 600px;
             line-height: 1.4;
         }
+
+        #intro-screen p:first-child {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffcc00; /* Highlight Learning Objective */
+        }
+
 
         #start-button {
             padding: 10px 20px;
@@ -121,42 +129,16 @@
             display: none;
         }
 
-        .evidence-label {
-            font-size: 14px;
-            font-weight: bold;
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 5px;
-            text-align: center;
-            pointer-events: none;
-            position: absolute;
-            display: none;
-        }
-
         .evidence-icon,
         .evidence-container {
             width: 200px; /* Set the same width for both */
             text-align: center; /* Center text inside */
         }
 
-        .evidence-icon {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 20px;
-            font-weight: bold;
-            z-index: 999;
-        }
 
         .evidence-container {
             position: fixed;
-            bottom: 70px;
+            bottom: 230px;
             right: 20px;
             background: rgba(255, 255, 255, 0.9);
             padding: 15px;
@@ -191,23 +173,494 @@
         .clickable-evidence:hover {
             color: darkblue;
         }
+        /* Style for the timesheet modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            width: 400px;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: black;
+        }
+
+        .modal-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .modal-content th, .modal-content td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .modal-content th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .modal-content td {
+            background-color: #f4f4f4;
+        }
+
+        #close-modal {
+            padding: 10px 15px;
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* Style for the email modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            width: 400px;
+        }
+
+        .email-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        #close-email-modal {
+            padding: 10px 15px;
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .chat-history {
+            max-height: 200px;  /* ✅ Restricts height */
+            overflow-y: auto;   /* ✅ Enables scrolling */
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f8f8f8;
+        }
+
+        .chat-toggle {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .chat-toggle:hover {
+            background-color: #0056b3;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            width: 400px;
+        }
+
+        /* Scrollable Chat History */
+        .chat-history-modal {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f8f8f8;
+        }
+
+        /* Button Styling */
+        #close-chat-modal {
+            padding: 10px 15px;
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #close-chat-modal:hover {
+            background: #0056b3;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between; /* ✅ Aligns "Previous Chats" to the right */
+            align-items: center;
+            font-weight: bold;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .toggle-chat {
+            background-color: rgba(100, 150, 200, 0.8);/* ✅ New Stylish Color */
+            color: black;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-chat:hover {
+            background-color: rgba(10, 120, 200, 0.8); /* ✅ Darker Hover Effect */
+        }
+
+        .chat-content {
+            max-height: 250px;
+            overflow-y: auto;
+            display: none; /* ✅ Initially Hidden */
+            background: #f8f8f8;
+            color: black;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .chat-input-container input {
+            flex-grow: 1;
+            padding: 5px;
+        }
+
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+
+        /* Report Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            width: 400px;
+        }
+
+        #suspect-selection, #detective-reason {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #detective-reason {
+            height: 100px;
+            resize: vertical;
+        }
+
+        #submit-suspect, #end-game {
+            padding: 10px 15px;
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        #submit-suspect:hover, #end-game:hover {
+            background: #0056b3;
+        }
+
+        #report-status {
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        #report-content {
+            text-align: left;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+
+        .guidebook-button:hover {
+            background-color: #e6b800;
+        }
+
+        /* Guidebook Modal */
+        #guidebook-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            width: 400px;
+        }
+
+        #guidebook-topic {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #close-guidebook {
+            padding: 10px 15px;
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #close-guidebook:hover {
+            background: #0056b3;
+        }
+
+        #guidebook-content {
+            margin-top: 10px;
+            text-align: left;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 250px; /* Limit height to prevent overflow */
+            overflow-y: auto;  /* Allow scrolling for long content */
+            border: 1px solid #ccc;
+        }
+
+        #guidebook-content ul, #guidebook-content ol {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        #guidebook-content ul li, #guidebook-content ol li {
+            margin-bottom: 8px; /* Adds spacing between list items */
+        }
+
+        #guidebook-content strong {
+            font-size: 15px;
+            color: black; /* Highlight key points in blue */
+        }
+
+        #guidebook-topic {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            width: 450px;
+        }
+
+        /* Standard Button Styling */
+        .action-button {
+            width: 230px; /* Ensures all buttons are the same width */
+            height: 50px; /* Ensures consistent height */
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .action-button:hover {
+            background: deepskyblue;
+        }
+
+        /* Positioning */
+        .evidence-icon {
+            position: fixed;
+            bottom: 160px; /* Adjusted to align with others */
+            right: 20px;
+            background-color:black;
+            color: white;
+            border: 3px solid deepskyblue;
+        }
+
+        .submit-report-button {
+            position: fixed;
+            bottom: 40px; /* Below Evidence Button */
+            right: 20px;
+            background-color: black; /* Red */
+            color: white;
+            border: 3px solid limegreen;
+        }
+
+        .submit-report-button:hover {
+            background-color: limegreen;
+        }
+
+        .guidebook-button {
+            position: fixed;
+            bottom: 100px; /* Below Submit Report Button */
+            right: 20px;
+            background-color: black; /* Yellow */
+            color: white;
+            border: 3px solid #FFD700; /* Gold Border */
+        }
+
+        .guidebook-button:hover {
+            background-color: #e6b800;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #submit-suspect, #close-report-modal {
+            padding: 10px 15px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #submit-suspect {
+            background: #007bff;
+            color: white;
+        }
+
+        #submit-suspect:hover {
+            background: #0056b3;
+        }
+
+        #close-report-modal {
+            background: #dc3545; /* Red Close Button */
+            color: white;
+        }
+
+        #close-report-modal:hover {
+            background: #a71d2a; /* Darker Red on Hover */
+        }
+
+
+
+
     </style>
 </head>
+
 <body>
-<!-- Introductory overlay -->
+<!-- Introductory overlay with Learning Objective -->
 <div id="intro-screen">
     <h1>HR Compliance Investigation</h1>
+    <p><strong>Learning Objective:</strong> In this case, you will learn how to identify workplace harassment, collect proper evidence, and take appropriate action.</p>
+
     <p>
-        The HR department has received a complaint that an anonymous employee has been sending threatening and inappropriate messages to a colleague.
+        The HR department has received a complaint that an employee has been sending inappropriate and threatening messages.
     </p>
     <p>
-        The complainant reports that the messages escalated from passive-aggressive comments to outright threats, leaving her feeling unsafe at work.
+        Your task as an investigator is to analyze the case, gather necessary evidence, and make the correct compliance decision.
     </p>
-    <p>
-        You have been assigned as the investigator to solve the case. Your task is to gather evidence and uncover the truth behind these allegations.
-    </p>
-    <button id="start-button">Click to Begin</button>
+
+    <button id="start-button">Start Investigation</button>
 </div>
+
 
 <!-- The Three.js canvas -->
 <canvas class="webgl"></canvas>
@@ -231,12 +684,79 @@
 </script>
 
 <!-- Evidence UI -->
-<div id="evidence-icon" class="evidence-icon">🗂️ Evidence</div>
+<button id="evidence-icon" class="action-button evidence-icon">🗂️ Evidence</button>
 <div id="evidence-container" class="evidence-container" style="display: none;">
     <h3>Collected Evidence</h3>
     <ul id="evidence-list"></ul>
 </div>
 
+<!-- Submit Investigation Report Button -->
+<button id="submit-report" class="action-button submit-report-button">Submit Investigation Report</button>
 
+<!-- Report Modal (Initially Hidden) -->
+<div id="report-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <h2 id="modal-title">Investigation Report</h2>
+
+        <!-- Step 1: Choose Suspect & Explanation -->
+        <div id="report-step-1">
+            <label for="suspect-selection"><strong>Select the Culprit:</strong></label>
+            <select id="suspect-selection">
+                <option value="">-- Select a suspect --</option>
+                <option value="Amy">Amy</option>
+                <option value="Bill">Bill</option>
+                <option value="Alex">Alex</option>
+                <option value="Emily">Emily</option>
+            </select>
+
+            <label for="detective-reason"><strong>Why do you think they are the culprit?</strong></label>
+            <textarea id="detective-reason" placeholder="Explain your reasoning... (Optional)"></textarea>
+
+            <button id="submit-suspect">Submit Report</button>
+            <button id="close-report-modal">Close</button>
+        </div>
+
+        <!-- Step 2: AI Generating Report -->
+        <p id="report-status" style="display: none;">Generating report, please wait...</p>
+
+        <!-- Step 3: Display AI-Generated Report -->
+        <div id="report-content" style="display: none;"></div>
+
+        <!-- End Game Button (Initially Hidden) -->
+        <button id="end-game" style="display: none;">End Game</button>
+    </div>
+</div>
+
+
+<!-- Compliance Guidebook Button -->
+<button id="open-guidebook" class="action-button guidebook-button">📖 HR Compliance Guidebook</button>
+
+<!-- Guidebook Modal (Initially Hidden) -->
+<div id="guidebook-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <h2>HR & Anti-Harassment Guidebook</h2>
+        <p><strong>Select a topic to learn more:</strong></p>
+
+        <select id="guidebook-topic">
+            <option value="harassment" selected>Understanding Workplace Harassment</option>
+            <option value="types_harassment">Types of Harassment</option>
+            <option value="reporting">Reporting & Investigation Procedures</option>
+            <option value="company_policy">Company Policies & Employee Rights</option>
+            <option value="bystander_intervention">Bystander Intervention</option>
+        </select>
+
+        <div id="guidebook-content">
+            <p>Select a topic to view details.</p>
+        </div>
+
+        <button id="close-guidebook">Close</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById("close-report-modal").addEventListener("click", function () {
+        document.getElementById("report-modal").style.display = "none";
+    });
+</script>
 </body>
 </html>
