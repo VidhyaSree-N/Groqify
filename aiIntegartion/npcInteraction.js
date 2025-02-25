@@ -1,6 +1,6 @@
-import * as THREE from './js/libs/three.module.js';
+import * as THREE from '../js/libs/three.module.js';
 import { getAIResponse } from './openAIService.js';
-import { collectedEvidence, scene, camera } from './setup.js';
+import { collectedEvidence, camera } from './setup.js';
 import { updateChatUI } from "./chatHandler.js";
 import { character } from "./main.js"; // ✅ Import detective character from main.js
 

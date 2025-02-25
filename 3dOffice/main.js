@@ -1,7 +1,7 @@
-import * as THREE from './js/libs/three.module.js';
-import './evidenceSystem.js';  // Ensure Evidence system is loaded
+import * as THREE from '../js/libs/three.module.js';
+import '../gameComponents/evidenceSystem.js';  // Ensure Evidence system is loaded
 import { scene, camera, controls, renderer, gltfLoader, npcs, collidableObjects, officeBoundingBox,evidenceObjects, collectedEvidence, screenMesh, cctvScreen, video, videoTexture} from './setup.js';
-import { createDetectiveChatBox, showChat, hideChat, updateChatPosition} from './chatHandler.js';
+import { showChat, hideChat, updateChatPosition} from '../aiIntegartion/chatHandler.js';
 
 /**
  * Load Detective Character
@@ -18,9 +18,6 @@ gltfLoader.load('dec_tex.glb', (gltf) => {
   character.rotation.y = Math.PI;
   character.boundingBox = new THREE.Box3().setFromObject(character);
   scene.add(character);
-
-  // // ✅ Chat box starts hidden but is always typable when shown
-  // createDetectiveChatBox();
 });
 
 let lastEvidenceCollectedTime = Date.now();
@@ -40,12 +37,14 @@ function checkForHint() {
  * Provide AI Hint Based on Missing Evidence
  */
 function provideHint() {
-  let missingEvidence = ["CCTV Footage", "Threatening Messages", "Login/Logout Records"]
+  let missingEvidence = [ "Alex's Laptop", "Emily's Laptop", "Bill's Laptop", "Login/Logout Records","CCTV Footage"]
       .filter(item => !collectedEvidence.includes(item));
 
   if (missingEvidence.length > 0) {
     let hintMessage = `💡 Hint: Check ${missingEvidence[0]}`;
     displayHintInScene(hintMessage);
+  } else {
+    console.log("Interact with Employees for more details.");
   }
 }
 
@@ -98,9 +97,8 @@ function displayHintInScene(message) {
   fadeHint();
 }
 
-// Check for hints every 10 seconds
-setInterval(checkForHint, 10000);
-
+// Check for hints every 20 seconds
+setInterval(checkForHint, 20000);
 
 /**
  * Check if Detective is Near an NPC and Show Chat
@@ -291,8 +289,8 @@ function isNearWall(position) {
   );
 }
 
-import { getAIReport } from './openAIService.js';
-import { generateGameSummary } from './gameSummary.js';
+import { getAIReport } from '../aiIntegartion/openAIService.js';
+import { generateGameSummary } from '../gameComponents/gameSummary.js';
 
 const modal = document.getElementById("report-modal");
 const reportStep1 = document.getElementById("report-step-1");
@@ -367,6 +365,9 @@ function disableMovementOnTyping() {
 // Call function to apply event listeners
 disableMovementOnTyping();
 
+
+
+
 /**
  * Keyboard Event Listeners
  */
@@ -383,7 +384,6 @@ window.addEventListener('keyup', (event) => {
   if (event.key === 'a' || event.key === 'ArrowLeft') movement.left = false;
   if (event.key === 'd' || event.key === 'ArrowRight') movement.right = false;
 });
-
 function updateVideoTexture() {
   if (video.readyState >= video.HAVE_ENOUGH_DATA) {
     videoTexture.needsUpdate = true;
@@ -392,13 +392,13 @@ function updateVideoTexture() {
 }
 updateVideoTexture();
 
-
 /**
  * Animation Loop
  */
 const tick = () => {
   controls.update();
   moveCharacter();
+  // updateLaptopLabels()
   renderer.render(scene, camera);
   window.requestAnimationFrame(tick);
 };
@@ -425,7 +425,7 @@ export function showVictimNarrationNearNPC() {
   narrationDiv.style.textAlign = "center";
   narrationDiv.style.maxWidth = "300px";
   narrationDiv.innerHTML =
-      "I’ve been receiving threatening messages that started as passive-aggressive remarks and have escalated to outright threats. I don’t feel safe at work.";
+      "Hi Detective I'm Amy, I’ve received threatening message at 8:30 PM that started as passive-aggressive remarks and have escalated to outright threats. I don’t feel safe at work.";
 
   document.body.appendChild(narrationDiv);
 

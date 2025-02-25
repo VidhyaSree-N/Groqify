@@ -1,0 +1,649 @@
+/* Style for the introductory overlay */
+#intro-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Above the canvas and other elements */
+    text-align: center;
+    padding: 20px;
+}
+
+#intro-screen h1 {
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+#intro-screen p {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    max-width: 600px;
+    line-height: 1.4;
+}
+
+#intro-screen p:first-child {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ffcc00; /* Highlight Learning Objective */
+}
+
+
+#start-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background: #007bff;
+    border: none;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Existing styles */
+.chat-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.chat-bubble {
+    position: absolute;
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    max-width: 550px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 1000;
+    white-space: normal;
+    pointer-events: auto;
+}
+
+.npc-chat {
+    background: rgba(0, 255, 200, 0.8);
+    color: black;
+    width: auto;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.player-chat {
+    background: rgba(255, 255, 255, 0.9);
+    color: black;
+    pointer-events: auto;
+    z-index: 1002;
+}
+
+#detective-input {
+    width: 90%;
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    pointer-events: auto;
+    z-index: 1002;
+}
+
+#send-message {
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 1002;
+}
+
+.evidence-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: center;
+    pointer-events: none;
+    position: absolute;
+    display: none;
+}
+
+.evidence-icon,
+.evidence-container {
+    width: 200px; /* Set the same width for both */
+    text-align: center; /* Center text inside */
+}
+
+
+.evidence-container {
+    position: fixed;
+    bottom: 230px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+}
+
+.evidence-container h3 {
+    margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black;
+}
+
+.evidence-container ul {
+    list-style: none;
+    padding: 0;
+}
+
+.evidence-container li {
+    padding: 5px 0;
+    font-weight: bold;
+}
+
+/* Make evidence list items look interactive */
+.clickable-evidence {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.clickable-evidence:hover {
+    color: darkblue;
+}
+/* Style for the timesheet modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    width: 400px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: black;
+}
+
+.modal-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.modal-content th, .modal-content td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.modal-content th {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-content td {
+    background-color: #f4f4f4;
+}
+
+#close-modal {
+    padding: 10px 15px;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Style for the email modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    width: 400px;
+}
+
+.email-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+}
+
+#close-email-modal {
+    padding: 10px 15px;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.chat-history {
+    max-height: 200px;  /* ✅ Restricts height */
+    overflow-y: auto;   /* ✅ Enables scrolling */
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #f8f8f8;
+}
+
+.chat-toggle {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.chat-toggle:hover {
+    background-color: #0056b3;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Modal Content */
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    width: 400px;
+}
+
+/* Scrollable Chat History */
+.chat-history-modal {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #f8f8f8;
+}
+
+/* Button Styling */
+#close-chat-modal {
+    padding: 10px 15px;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#close-chat-modal:hover {
+    background: #0056b3;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between; /* ✅ Aligns "Previous Chats" to the right */
+    align-items: center;
+    font-weight: bold;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.toggle-chat {
+    background-color: rgba(100, 150, 200, 0.8);/* ✅ New Stylish Color */
+    color: black;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.3s ease;
+}
+
+.toggle-chat:hover {
+    background-color: rgba(10, 120, 200, 0.8); /* ✅ Darker Hover Effect */
+}
+
+.chat-content {
+    max-height: 250px;
+    overflow-y: auto;
+    display: none; /* ✅ Initially Hidden */
+    background: #f8f8f8;
+    color: black;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+}
+
+.chat-input-container {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.chat-input-container input {
+    flex-grow: 1;
+    padding: 5px;
+}
+
+button {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+
+/* Report Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    width: 400px;
+}
+
+#suspect-selection, #detective-reason {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#detective-reason {
+    height: 100px;
+    resize: vertical;
+}
+
+#submit-suspect, #end-game {
+    padding: 10px 15px;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+#submit-suspect:hover, #end-game:hover {
+    background: #0056b3;
+}
+
+#report-status {
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+#report-content {
+    text-align: left;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+
+.guidebook-button:hover {
+    background-color: #e6b800;
+}
+
+/* Guidebook Modal */
+#guidebook-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    width: 400px;
+}
+
+#guidebook-topic {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#close-guidebook {
+    padding: 10px 15px;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#close-guidebook:hover {
+    background: #0056b3;
+}
+
+#guidebook-content {
+    margin-top: 10px;
+    text-align: left;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+    max-height: 250px; /* Limit height to prevent overflow */
+    overflow-y: auto;  /* Allow scrolling for long content */
+    border: 1px solid #ccc;
+}
+
+#guidebook-content ul, #guidebook-content ol {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+#guidebook-content ul li, #guidebook-content ol li {
+    margin-bottom: 8px; /* Adds spacing between list items */
+}
+
+#guidebook-content strong {
+    font-size: 15px;
+    color: black; /* Highlight key points in blue */
+}
+
+#guidebook-topic {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    width: 450px;
+}
+
+/* Standard Button Styling */
+.action-button {
+    width: 230px; /* Ensures all buttons are the same width */
+    height: 50px; /* Ensures consistent height */
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 15px;
+    font-size: 15px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.action-button:hover {
+    background: deepskyblue;
+}
+
+/* Positioning */
+.evidence-icon {
+    position: fixed;
+    bottom: 160px; /* Adjusted to align with others */
+    right: 20px;
+    background-color:black;
+    color: white;
+    border: 3px solid deepskyblue;
+}
+
+.submit-report-button {
+    position: fixed;
+    bottom: 40px; /* Below Evidence Button */
+    right: 20px;
+    background-color: black; /* Red */
+    color: white;
+    border: 3px solid limegreen;
+}
+
+.submit-report-button:hover {
+    background-color: limegreen;
+}
+
+.guidebook-button {
+    position: fixed;
+    bottom: 100px; /* Below Submit Report Button */
+    right: 20px;
+    background-color: black; /* Yellow */
+    color: white;
+    border: 3px solid #FFD700; /* Gold Border */
+}
+
+.guidebook-button:hover {
+    background-color: #e6b800;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#submit-suspect, #close-report-modal {
+    padding: 10px 15px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#submit-suspect {
+    background: #007bff;
+    color: white;
+}
+
+#submit-suspect:hover {
+    background: #0056b3;
+}
+
+#close-report-modal {
+    background: #dc3545; /* Red Close Button */
+    color: white;
+}
+
+#close-report-modal:hover {
+    background: #a71d2a; /* Darker Red on Hover */
+}
+
+#laptop-labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.laptop-label {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    border-radius: 4px;
+}

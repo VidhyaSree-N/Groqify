@@ -1,7 +1,7 @@
-import * as THREE from './js/libs/three.module.js';
-import { OrbitControls } from './js/libs/OrbitControls.js';
-import { GLTFLoader } from './js/libs/GLTFLoader.js';
-import { DRACOLoader } from './js/libs/DRACOLoader.js';
+import * as THREE from '../js/libs/three.module.js';
+import { OrbitControls } from '../js/libs/OrbitControls.js';
+import { GLTFLoader } from '../js/libs/GLTFLoader.js';
+import { DRACOLoader } from '../js/libs/DRACOLoader.js';
 
 /**
  * Base Setup
@@ -43,9 +43,15 @@ gltfLoader.load('my.glb', (gltf) => {
       child.boundingBox = new THREE.Box3().setFromObject(child);
       collidableObjects.push(child);
 
-      // **Identify Evidence Objects**
-      const evidenceNames = ["Cube010", "Cube002", "Cube008"];
-      if (evidenceNames.includes(child.name)) {
+      // **Identify and Rename Laptops Based on Employee Names**
+      const laptopMapping = {
+        "Cube010": "Alex's Laptop",
+        "Cube002": "Emily's Laptop",
+        "Cube008": "Bill's Laptop",
+      };
+
+      if (laptopMapping[child.name]) {
+        child.name = laptopMapping[child.name];
         evidenceObjects.push(child);
       }
     }
@@ -60,10 +66,10 @@ gltfLoader.load('my.glb', (gltf) => {
  * Load NPCs
  */
 let npcs = [
-  { name: "femaleEmployee", model: "female.glb", position: new THREE.Vector3(2.82, 2.51, 0.66), rotationY: 0, scale: 0.9, dialogue: "Hello, detective! Need any help?", object: null },
-  { name: "seniorEmployee", model: "senior.glb", position: new THREE.Vector3(6.9, 2.11, 6.8), rotationY: 0, scale: 1.0, dialogue: "Good day, detective. What brings you here?", object: null },
-  { name: "maleEmployee", model: "male.glb", position: new THREE.Vector3(-1.0, 1.81, 6.7), rotationY: Math.PI / 2, scale: 1.3, dialogue: "Hey detective, do you have any leads yet?", object: null },
-  { name: "victimEmployee", model: "victim.glb", position: new THREE.Vector3(4.8, 1.81, 13), rotationY: 24.5, scale: 1.3, dialogue: "Anything else you want know detective?", object: null }
+  { name: "Emily", model: "female.glb", position: new THREE.Vector3(2.82, 2.51, 0.66), rotationY: 0, scale: 0.9, dialogue: "Hello, detective! Need any help?", object: null },
+  { name: "Bill", model: "senior.glb", position: new THREE.Vector3(6.9, 2.11, 6.8), rotationY: 0, scale: 1.0, dialogue: "Good day, detective. What brings you here?", object: null },
+  { name: "Alex", model: "male.glb", position: new THREE.Vector3(-1.0, 1.81, 6.7), rotationY: Math.PI / 2, scale: 1.3, dialogue: "Hey detective, do you have any leads yet?", object: null },
+  { name: "Amy", model: "victim.glb", position: new THREE.Vector3(4.8, 1.81, 13), rotationY: 24.5, scale: 1.3, dialogue: "Anything else you want know detective?", object: null }
 ];
 
 npcs.forEach(npc => {
@@ -106,7 +112,7 @@ scene.add(screenMesh);
  * 📹 **Add a CCTV Screen Using a Video Texture**
  */
 const video = document.createElement('video');
-video.src = './footage.mp4'; // 📌 Replace with actual CCTV footage file
+video.src = './cctv.mp4'; // 📌 Replace with actual CCTV footage file
 video.loop = true;
 video.muted = true; // No sound needed
 video.play(); // Auto-play
@@ -127,10 +133,8 @@ const cctvScreen = new THREE.Mesh(cctvGeometry, cctvMaterial);
 
 // ✅ Position and rotate the CCTV screen
 cctvScreen.position.set(9.5, 2.6, 16);  // Adjust position as needed
-cctvScreen.rotation.y = Math.PI / 2;  // Face towards the player
+cctvScreen.rotation.y = -Math.PI / 2;  // Face towards the player
 scene.add(cctvScreen);
-
-
 
 /**
  * Lights
@@ -161,5 +165,42 @@ controls.target.set(1, 4, 15);
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(sizes.width, sizes.height);
 renderer.outputEncoding = THREE.sRGBEncoding;
+
+function createTextLabel(text, position) {
+  // Create a canvas
+  let canvas = document.createElement("canvas");
+  let ctx = canvas.getContext("2d");
+  canvas.width = 512;
+  canvas.height = 256;
+
+  // Set text properties
+  ctx.fillStyle = "white"; // Text color
+  ctx.font = "Bold 70px Arial"; // Font size and style
+  ctx.textAlign = "center";
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+  // Create texture from canvas
+  let texture = new THREE.CanvasTexture(canvas);
+  let material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+
+  // Create plane for the text
+  let plane = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.5), material);
+  plane.position.copy(position);
+  plane.position.y += 0.5; // ✅ Adjust height above the laptop
+  plane.lookAt(camera.position); // ✅ Ensure it faces the camera
+
+  scene.add(plane);
+}
+
+// ✅ Add labels to laptops
+const laptopPositions = {
+  "Emily": new THREE.Vector3(2.62, 2.1, 3.26),
+  "Bill": new THREE.Vector3(8.1, 2.4, 9.8),
+  "Alex": new THREE.Vector3(-2.1, 2.5, 9.3),
+};
+
+Object.entries(laptopPositions).forEach(([name, position]) => {
+  createTextLabel(name, position);
+});
 
 export { scene, camera, controls, renderer, gltfLoader, collidableObjects, officeBoundingBox, npcs, evidenceObjects, collectedEvidence, screenMesh, cctvScreen, video, videoTexture };

@@ -1,4 +1,4 @@
-import * as THREE from './js/libs/three.module.js';
+import * as THREE from '../js/libs/three.module.js';
 import { camera } from './setup.js';
 import { handlePlayerMessage } from './npcInteraction.js';
 import { getNearestNPC } from './main.js';
@@ -75,7 +75,6 @@ export async function createDetectiveChatBox(npcName) {
     inputField.value = "";
   };
 }
-
 
 /**
  * 📌 Updates the Chat UI Dynamically
