@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HR Compliance Game</title>
     <link rel="stylesheet" href="index.css">
-    <script type="module" src="guidebook.js"></script>
-    <script type="module" src="setup.js"></script>
-    <script type="module" src="main.js"></script>
+    <script type="module" src="./gameComponents/guidebook.js"></script>
+    <script type="module" src="./3dOffice/setup.js"></script>
+    <script type="module" src="./3dOffice/main.js"></script>
 </head>
 
 <body>
@@ -23,7 +23,7 @@
         Your task as an investigator is to analyze the case, gather necessary evidence, and make the correct compliance decision.
     </p>
 
-    <button id="start-button">Start Investigation</button>
+    <button id="start-button">Start and Learn</button>
 </div>
 
 <!-- The Three.js canvas -->
@@ -34,7 +34,7 @@
 
 <!-- Inline script to remove the intro overlay -->
 <script type="module">
-    import { showVictimNarrationNearNPC } from './main.js';
+    import { showVictimNarrationNearNPC } from './3dOffice/main.js';
 
     document.getElementById('start-button').addEventListener('click', () => {
         document.getElementById('intro-screen').style.display = 'none';

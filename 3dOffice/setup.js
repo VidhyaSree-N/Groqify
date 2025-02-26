@@ -20,13 +20,13 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
 const textureLoader = new THREE.TextureLoader();
-const bakedTexture = textureLoader.load('text_baked.jpg');
+const bakedTexture = textureLoader.load('../models/text_baked.jpg');
 bakedTexture.flipY = false;
 bakedTexture.encoding = THREE.sRGBEncoding;
 const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture });
 
 /**
- * Load Environment (my.glb)
+ * Load Environment (office.glb)
  */
 let environment;
 let collidableObjects = [];
@@ -35,7 +35,7 @@ let evidenceObjects = [];
 
 let collectedEvidence = [];
 
-gltfLoader.load('my.glb', (gltf) => {
+gltfLoader.load('../models/office.glb', (gltf) => {
   gltf.scene.traverse((child) => {
     if (child.isMesh) {
       child.material = bakedMaterial;
@@ -66,10 +66,10 @@ gltfLoader.load('my.glb', (gltf) => {
  * Load NPCs
  */
 let npcs = [
-  { name: "Emily", model: "female.glb", position: new THREE.Vector3(2.82, 2.51, 0.66), rotationY: 0, scale: 0.9, dialogue: "Hello, detective! Need any help?", object: null },
-  { name: "Bill", model: "senior.glb", position: new THREE.Vector3(6.9, 2.11, 6.8), rotationY: 0, scale: 1.0, dialogue: "Good day, detective. What brings you here?", object: null },
-  { name: "Alex", model: "male.glb", position: new THREE.Vector3(-1.0, 1.81, 6.7), rotationY: Math.PI / 2, scale: 1.3, dialogue: "Hey detective, do you have any leads yet?", object: null },
-  { name: "Amy", model: "victim.glb", position: new THREE.Vector3(4.8, 1.81, 13), rotationY: 24.5, scale: 1.3, dialogue: "Anything else you want know detective?", object: null }
+  { name: "Emily", model: "../models/female.glb", position: new THREE.Vector3(2.82, 2.51, 0.66), rotationY: 0, scale: 0.9, dialogue: "Hello, detective! Need any help?", object: null },
+  { name: "Bill", model: "../models/senior.glb", position: new THREE.Vector3(6.9, 2.11, 6.8), rotationY: 0, scale: 1.0, dialogue: "Good day, detective. What brings you here?", object: null },
+  { name: "Alex", model: "../models/male.glb", position: new THREE.Vector3(-1.0, 1.81, 6.7), rotationY: Math.PI / 2, scale: 1.3, dialogue: "Hey detective, do you have any leads yet?", object: null },
+  { name: "Amy", model: "../models/victim.glb", position: new THREE.Vector3(4.8, 1.81, 13), rotationY: 24.5, scale: 1.3, dialogue: "Anything else you want know detective?", object: null }
 ];
 
 npcs.forEach(npc => {
@@ -87,7 +87,7 @@ npcs.forEach(npc => {
 /**
  * 📺 **Add a Digital Screen Using an Image (Correctly Oriented)**
  */
-const screenTexture = textureLoader.load('./logg.png');
+const screenTexture = textureLoader.load('../models/logg.png');
 
 // ✅ Ensure the texture is correctly oriented
 screenTexture.flipY = true;  // Flip vertically if needed
@@ -112,7 +112,7 @@ scene.add(screenMesh);
  * 📹 **Add a CCTV Screen Using a Video Texture**
  */
 const video = document.createElement('video');
-video.src = './cctv.mp4'; // 📌 Replace with actual CCTV footage file
+video.src = '../models/cctv.mp4'; // 📌 Replace with actual CCTV footage file
 video.loop = true;
 video.muted = true; // No sound needed
 video.play(); // Auto-play

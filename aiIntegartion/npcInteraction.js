@@ -1,8 +1,8 @@
 import * as THREE from '../js/libs/three.module.js';
 import { getAIResponse } from './openAIService.js';
-import { collectedEvidence, camera } from './setup.js';
+import { collectedEvidence, camera } from '../3dOffice/setup.js';
 import { updateChatUI } from "./chatHandler.js";
-import { character } from "./main.js"; // ✅ Import detective character from main.js
+import { character } from "../3dOffice/main.js"; // ✅ Import detective character from main.js
 
 const SERVER_URL = "http://localhost:3001"; // Updated safe port
 const CHAT_DISAPPEAR_DISTANCE = 2; // ✅ Distance at which NPC chat disappears

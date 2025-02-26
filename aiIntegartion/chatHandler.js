@@ -1,7 +1,7 @@
 import * as THREE from '../js/libs/three.module.js';
-import { camera } from './setup.js';
+import { camera } from '../3dOffice/setup.js';
 import { handlePlayerMessage } from './npcInteraction.js';
-import { getNearestNPC } from './main.js';
+import { getNearestNPC } from '../3dOffice/main.js';
 
 
 const SERVER_URL = "http://localhost:3001"; // Updated safe port

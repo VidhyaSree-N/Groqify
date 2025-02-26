@@ -1,4 +1,4 @@
-import { collectedEvidence } from './setup.js';
+import { collectedEvidence } from '../3dOffice/setup.js';
 const SERVER_URL = "http://localhost:3001";
 
 export async function generateGameSummary() {

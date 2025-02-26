@@ -1,7 +1,7 @@
 import * as THREE from '../js/libs/three.module.js';
-import { camera } from './setup.js'; // Ensure camera access
-import { evidenceObjects, collectedEvidence, screenMesh, cctvScreen, scene } from './setup.js';
-import { character } from './main.js';
+import { camera } from '../3dOffice/setup.js'; // Ensure camera access
+import { evidenceObjects, collectedEvidence, screenMesh, cctvScreen, scene } from '../3dOffice/setup.js';
+import { character } from '../3dOffice/main.js';
 
 /**
  * UI Elements
@@ -258,7 +258,7 @@ function openCCTVVideo() {
 
     <div class="cctv-modal-content" style="width: 80%; max-width: 900px; text-align: center;">
       <video id="cctv-video" autoplay controls style="width: 100%; border: 2px solid white;">
-        <source src="/cctv.mp4" type="video/mp4">
+        <source src="../models/cctv.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
 

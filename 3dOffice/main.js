@@ -10,7 +10,7 @@ export let character;
 const characterSpeed = 0.1;
 const movement = { forward: false, backward: false, left: false, right: false };
 
-gltfLoader.load('dec_tex.glb', (gltf) => {
+gltfLoader.load('../models/dec_tex.glb', (gltf) => {
   console.log("✅ Character Loaded");
   character = gltf.scene;
   character.position.set(3.2, 1.9, 15);
