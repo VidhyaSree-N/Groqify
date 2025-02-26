@@ -17,23 +17,45 @@ This project is an **AI-driven compliance training game** designed to teach **HR
 
 ---
 
-## **Features**
-**Scenario-Based Learning:** Players solve a workplace harassment case.  
-**AI Chat with NPCs:** A chat box is automatically triggered when detective is near to npc's and NPCs dynamically respond with the help of OpenAI API based on **collected evidence**.  
-**AI Hints:** If a player is stuck, AI provides **real-time guidance** based on evidences to be collected.  
-**Immersive 3D Gameplay:** Built with **Three.js & WebGL**.  
-**Evidence Collection System:** Players analyze **emails, CCTV footage, and logs**.The Hints dynamically glow when detective is near them.  
-**AI-Generated Reports:** AI evaluates **player decisions** and provides feedback.  
-**HR Compliance Guidebook:** Players can access official **HR policies**.
-**Learning Note:** A learning note is added with every collected evidence to teach the player importance of compliance.
+## **🚀 Features**
+
+### **🕵️ Scenario-Based Learning**
+Players solve a **workplace harassment case** by investigating, collecting evidence, and making decisions.
+
+### **🗣️ AI Chat with NPCs**
+- A **chat box is automatically triggered** when the detective is near an NPC.
+- NPCs dynamically respond with **AI-generated dialogues** based on **collected evidence** (powered by OpenAI API).
+
+### **💡 AI Hints & Guidance**
+- If a player is stuck, AI provides **real-time hints** based on missing evidence.
+- Hints dynamically **glow when the detective is near** important clues.
+
+### **🎮 Immersive 3D Gameplay**
+- Built with **Three.js & WebGL** for a realistic office investigation environment.
+
+### **🔍 Evidence Collection System**
+- Players analyze **emails, CCTV footage, login logs, and digital footprints** to gather clues.
+- AI-powered hints help detect missing evidence.
+
+### **📑 AI-Generated Investigation Reports**
+- AI evaluates **player decisions** and provides **personalized compliance feedback**.
+- The final report determines if the player **correctly identified the perpetrator**.
+
+### **📖 HR Compliance Guidebook**
+- Players can access official **HR policies** inside the game.
+- Covers **types of harassment, reporting procedures, and employee rights**.
+
+### **📝 Learning Notes on Collected Evidence**
+- With every collected evidence, a **learning note is added** to explain **why it matters in compliance training**.
+
 ---
 
-## **Compliance Focus: Anti-Harassment Training**
+## **📚 Compliance Focus: Anti-Harassment Training**
 The game helps players understand:  
-**Types of Workplace Harassment** (Verbal, Physical, Digital)  
-**How to Identify and Report Harassment**  
-**Investigative Procedures & HR Policies**  
-**Preventative Measures & Employee Rights**
+✔ **Types of Workplace Harassment** (Verbal, Physical, Digital)  
+✔ **How to Identify and Report Harassment**  
+✔ **Investigative Procedures & HR Policies**  
+✔ **Preventative Measures & Employee Rights**
 
 Players **apply HR compliance knowledge** while solving a **realistic case scenario**.
 
